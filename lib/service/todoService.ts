@@ -1,10 +1,5 @@
-import {
-  addTodo,
-  getAllTodos,
-  getTodoById,
-  Todo,
-  toggleTodo,
-} from "../models/todo";
+import { addTodo, getAllTodos, getTodoById, toggleTodo } from "../models/todo";
+import { Todo } from "../models/types";
 
 export function listTodos(): Todo[] {
   return getAllTodos();

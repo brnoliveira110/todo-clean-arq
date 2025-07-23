@@ -1,10 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-
-export type Todo = {
-  id: string;
-  title: string;
-  done: boolean;
-};
+import { Todo } from "./types";
 
 const todos: Todo[] = [];
 

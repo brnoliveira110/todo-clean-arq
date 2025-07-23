@@ -9,5 +9,10 @@ export async function createTodoAction(formData: FormData) {
 }
 
 export async function toggleTodoAction(id: string) {
-  return toggleTodoStatus(id);
+  try {
+    return toggleTodoStatus(id);
+  } catch (error) {
+    console.error("Erro ao alternar status do TODO:", error);
+    throw error;
+  }
 }

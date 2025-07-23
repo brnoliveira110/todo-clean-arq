@@ -1,6 +1,10 @@
+import { listTodos } from "@/lib/service/todoService";
 import { createTodoAction } from "./_todos/actions";
+import TodoList from "./_todos/components/TodoList";
 
 export default function Home() {
+  const todos = listTodos();
+
   return (
     <>
       <main className="max-w-xl mx-auto p-4">
@@ -25,6 +29,7 @@ export default function Home() {
             Add
           </button>
         </form>
+        <TodoList todos={todos} />
       </main>
     </>
   );
