@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useTransition } from "react";
-import { toggleTodoAction } from "../actions";
-import Link from "next/link";
-import { cn } from "@/lib/utils/tailwindMerge";
 import { Todo } from "@/lib/types";
 
 const TodoList = ({
@@ -13,7 +10,7 @@ const TodoList = ({
   todos: Todo[];
   onDelete: (id: string) => void;
 }) => {
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
 
   return (
     <ul className="space-y-2">
