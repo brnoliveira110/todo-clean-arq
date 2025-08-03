@@ -2,7 +2,7 @@ import { Todo } from "../types";
 
 function getDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const open = indexedDB.open("", 1);
+    const open = indexedDB.open("todo-mvc", 1);
     open.onupgradeneeded = () => {
       const db = open.result;
       if (!db.objectStoreNames.contains("todos")) {
@@ -42,5 +42,23 @@ export async function deleteTodoDb(id: string) {
     tx.objectStore("todos").delete(id);
     tx.oncomplete = resolve;
     tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function toggleTodoDb(id: string) {
+  const db = await getDb();
+  return new Promise<void>((resolve, reject) => {
+    const tx = db.transaction("todos", "readwrite");
+    const store = tx.objectStore("todos");
+    const req = store.get(id);
+    req.onsuccess = () => {
+      const todo = req.result;
+      if (todo) {
+        todo.done = !todo.done;
+        store.put(todo);
+      }
+      tx.oncomplete = () => resolve();
+    };
+    req.onerror = () => reject(req.error);
   });
 }
