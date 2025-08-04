@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import TodoList from "./todos/components/TodoList";
 import { useTodoStore } from "@/lib/stores/todoStore";
+import { useTodosSync } from "@/lib/hooks/useTodosSync";
 
 export default function Home() {
+  useTodosSync();
+
   const { getTodos, addTodo } = useTodoStore();
   const [title, setTitle] = useState("");
 
