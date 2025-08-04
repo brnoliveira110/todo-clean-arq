@@ -1,4 +1,5 @@
 import { Todo } from "../types";
+import { notifySync } from "./notify";
 
 function getDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -16,10 +17,13 @@ function getDb(): Promise<IDBDatabase> {
 
 export async function addTodoDb(todo: Todo) {
   const db = await getDb();
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const tx = db.transaction("todos", "readwrite");
     tx.objectStore("todos").add(todo);
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => {
+      notifySync();
+      resolve();
+    };
     tx.onerror = () => reject(tx.error);
   });
 }
@@ -37,10 +41,13 @@ export async function listTodosDb(): Promise<Todo[]> {
 
 export async function deleteTodoDb(id: string) {
   const db = await getDb();
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const tx = db.transaction("todos", "readwrite");
     tx.objectStore("todos").delete(id);
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => {
+      notifySync();
+      resolve();
+    };
     tx.onerror = () => reject(tx.error);
   });
 }
@@ -53,11 +60,14 @@ export async function toggleTodoDb(id: string) {
     const req = store.get(id);
     req.onsuccess = () => {
       const todo = req.result;
-      if (todo) {
-        todo.done = !todo.done;
-        store.put(todo);
+      if (!todo) {
+        resolve();
+        return;
       }
-      tx.oncomplete = () => resolve();
+      todo.done = !todo.done;
+      store.put(todo);
+      notifySync();
+      resolve();
     };
     req.onerror = () => reject(req.error);
   });
