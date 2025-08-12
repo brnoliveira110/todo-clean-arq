@@ -5,7 +5,8 @@ import {
   deleteTodoDb,
   listTodosDb,
   toggleTodoDb,
-} from "../idb/todoClientDB";
+} from "../idb/todoClientDb";
+import { notifySync } from "../idb/notify";
 
 type TodoStore = {
   todos: Todo[];
@@ -22,19 +23,26 @@ export const useTodoStore = create<TodoStore>((set) => ({
     set({ todos });
   },
   addTodo: async (title: string) => {
-    const newTodo: Todo = { id: Date.now().toString(), title, done: false };
+    const newTodo: Todo = {
+      id: Date.now().toString(),
+      title,
+      done: false,
+    };
     await addTodoDb(newTodo);
-    const todos = await listTodosDb();
-    set({ todos });
+    set((state) => ({ todos: [...state.todos, newTodo] }));
+    notifySync();
   },
   deleteTodo: async (id: string) => {
     await deleteTodoDb(id);
-    const todos = await listTodosDb();
-    set({ todos });
+
+    set((state) => ({ todos: state.todos.filter((t) => t.id !== id) }));
+    notifySync();
   },
   toggleTodo: async (id: string) => {
     await toggleTodoDb(id);
     const todos = await listTodosDb();
+    todos.find((t) => t.id === id);
     set({ todos });
+    notifySync();
   },
 }));

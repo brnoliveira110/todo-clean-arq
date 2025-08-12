@@ -66,7 +66,6 @@ export async function toggleTodoDb(id: string) {
       }
       todo.done = !todo.done;
       store.put(todo);
-      notifySync();
       resolve();
     };
     req.onerror = () => reject(req.error);
